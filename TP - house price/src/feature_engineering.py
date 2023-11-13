@@ -9,6 +9,7 @@ FECHA:
 """
 
 # Imports
+import pandas as pd
 
 class FeatureEngineeringPipeline(object):
 
@@ -23,6 +24,7 @@ class FeatureEngineeringPipeline(object):
         """
             
         # COMPLETAR CON CÓDIGO
+        pandas_df = pd.read_csv(self.input_path)
         
         return pandas_df
 
