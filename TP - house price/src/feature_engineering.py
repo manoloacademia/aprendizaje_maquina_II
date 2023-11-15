@@ -16,6 +16,10 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
+from utils import CappingTransformer
+from utils import calculate_null_percentage
+from utils import calculate_outlier_percentage
+
 
 
 class FeatureEngineeringPipeline(object):
@@ -88,6 +92,20 @@ class FeatureEngineeringPipeline(object):
         metadata_features  = ['Id']
 
         final_features = numeric_features + categorical_features + metadata_features
+
+        # Data cleaned transformation
+        # Removing columns
+        data_cleaned = df.copy()
+
+        null_percentages = calculate_null_percentage(df)
+        outlier_percentages = calculate_outlier_percentage(df[numeric_features])
+
+        # Selecting the 2 features with highest number of outliers and the 6 with highest number of missings
+        features_to_drop = outlier_percentages[:2]['Column'].tolist() + null_percentages[:6]['Column'].tolist()
+        data_cleaned.drop(columns = features_to_drop, inplace = True)
+
+        # Removing na
+        data_cleaned.dropna(inplace = True)
 
         full_pipeline.fit(X = data_cleaned[final_features])
         final_data = full_pipeline.transform(X = data_cleaned[final_features])
