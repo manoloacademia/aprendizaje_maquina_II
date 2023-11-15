@@ -51,10 +51,35 @@ class FeatureEngineeringPipeline(object):
     
     def data_transformation(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        COMPLETAR DOCSTRING
-        
+        Perform data transformation on the input DataFrame.
+
+        Parameters:
+        - df (pd.DataFrame): The input DataFrame containing the dataset.
+
+        Returns:
+        - pd.DataFrame: Transformed DataFrame after preprocessing steps.
+
+        Steps:
+        1. Define numeric and categorical features of the dataset.
+        2. Combine preprocessing steps into pipelines for numeric and categorical features.
+        3. Create a ColumnTransformer to apply pipelines to respective feature types.
+        4. Combine all steps into a single pipeline.
+        5. Identify specific features for transformation.
+        6. Perform data cleaning transformations:
+            - Remove specified columns with high outlier percentages and missing values.
+            - Drop rows with NA values.
+        7. Fit the full pipeline on the cleaned data.
+        8. Transform the cleaned data using the full pipeline.
+        9. Rename columns in the transformed DataFrame.
+
+        Example:
+        ```
+        transformer = FeatureEngineeringPipeline()
+        transformed_data = transformer.data_transformation(input_dataframe)
+        ```
+
         """
-        # Defining numeric and categorical features of the dataset
+        # Define numeric and categorical features of the dataset
         numeric_features = df.select_dtypes(include = ['int64', 'float64']).columns
         categorical_features = df.select_dtypes(include = ['object']).columns
         target = ['SalePrice']
@@ -85,6 +110,7 @@ class FeatureEngineeringPipeline(object):
             ('feature_transform', feature_transformer)
         ])
 
+        # Specify the features in categories
         numeric_features = ['OverallQual', 'GrLivArea', 'GarageCars', 'TotalBsmtSF', 'FullBath',
             'YearRemodAdd', 'YearBuilt', 'Fireplaces', 'MasVnrArea', 'LotArea',
             'SalePrice']
@@ -97,6 +123,7 @@ class FeatureEngineeringPipeline(object):
         # Removing columns
         data_cleaned = df.copy()
 
+        # Calculate null and outlier percentages
         null_percentages = calculate_null_percentage(df)
         outlier_percentages = calculate_outlier_percentage(df[numeric_features])
 
@@ -114,14 +141,28 @@ class FeatureEngineeringPipeline(object):
         
         return df_transformed
 
-    def write_prepared_data(self, transformed_dataframe):
+    def write_prepared_data(self, transformed_dataframe) -> None:
         """
-        COMPLETAR DOCSTRING
-        
+        Write the transformed DataFrame to a CSV file.
+
+        Parameters:
+        - transformed_dataframe (pd.DataFrame): The DataFrame containing the prepared and transformed data.
+
+        Returns:
+        - None
+
+        This function takes a preprocessed DataFrame and saves it to a CSV file named 'transformed_df.csv'.
+        The CSV file will be created in the current working directory.
+
+        Example:
+        ```
+        transformer = YourTransformerClass()
+        prepared_data = transformer.data_transformation(input_dataframe)
+        transformer.write_prepared_data(prepared_data)
+        ```
+
         """
-        
-        # COMPLETAR CON CÓDIGO
-        
+        transformed_dataframe.to_csv('TP - house price\data\transformed_df.csv')
         return None
 
     def run(self):
@@ -132,5 +173,5 @@ class FeatureEngineeringPipeline(object):
 
   
 if __name__ == "__main__":
-    FeatureEngineeringPipeline(input_path = 'Ruta/De/Donde/Voy/A/Leer/Mis/Datos',
-                               output_path = 'Ruta/Donde/Voy/A/Escribir/Mi/Archivo').run()
+    FeatureEngineeringPipeline(input_path = 'TP - house price\data\train.csv', # Chequear rutas con OS!!!!!!!!
+                               output_path = 'TP - house price\data\transformed_df.csv').run()
